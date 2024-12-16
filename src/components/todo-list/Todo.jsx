@@ -1,31 +1,28 @@
-import { useReducer } from "react";
+import { useContext, useState } from "react";
 import { MdDeleteForever } from "react-icons/md";
 import { FaRegCheckCircle } from "react-icons/fa";
+import { TodoContext } from "../context/toggleProvider";
+
 const Todo = () => {
-  const initialVal = {
-    stateVal: false,
-    isCompleted: false,
-  };
-
-  const [state, dispatch] = useReducer(handleChange, initialVal);
-
-  function handleChange(state, action) {
-    switch (action.type) {
-      case "TODO_SWITCH":
-        return { ...state, stateVal: !state.stateVal };
-      case "TOGGLE_COMPLETED":
-        return { ...state, isCompleted: !state.isCompleted };
-      default:
-        return state;
-    }
-  }
-
+  const { state: todoState, dispatch: todoDispatch } = useContext(TodoContext);
+  const [todos, setTodos] = useState([]);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const handleTodoClick = () => {
-    dispatch({ type: "TODO_SWITCH" });
+    todoDispatch({ type: "TODO_SWITCH" });
+  };
+  const handleCompletedClick = () => {
+    todoDispatch({ type: "TOGGLE_COMPLETED" });
   };
 
-  const handleCompletedClick = () => {
-    dispatch({ type: "TOGGLE_COMPLETED" });
+  const handleAddTodo = () => {
+    let newTodoItem = {
+      title: title,
+      description: description,
+    };
+    let updatedItem = [...todos];
+    updatedItem.push(newTodoItem);
+    setTodos(updatedItem);
   };
 
   return (
@@ -39,7 +36,9 @@ const Todo = () => {
           <input
             type="text"
             placeholder="Input name"
-            className="rounded-sm border-2 w-full md:w-64"
+            className="rounded-sm border-2 w-full md:w-64 text-orange-600"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           />
         </div>
         <div className="flex flex-col">
@@ -47,11 +46,14 @@ const Todo = () => {
           <input
             type="text"
             placeholder="Input description"
-            className="rounded-sm border-2 w-full md:w-64"
+            className="rounded-sm border-2 w-full md:w-64 text-orange-600"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
           />
         </div>
         <div className="flex justify-start items-start">
           <button
+            onClick={handleAddTodo}
             type="button"
             className="md:p-4 p-1 w-full md:max-w-lg m-auto rounded-sm border bg-orange-700 hover:bg-orange-500 border-white"
           >
@@ -62,7 +64,7 @@ const Todo = () => {
       <div className="flex flex-row gap-1">
         <button
           className={`p-1 rounded-sm border border-black ${
-            state.stateVal ? "bg-orange-700" : "bg-orange-500"
+            todoState.stateVal ? "bg-orange-700" : "bg-orange-500"
           }`}
           onClick={handleTodoClick}
         >
@@ -70,23 +72,32 @@ const Todo = () => {
         </button>
         <button
           className={`p-1 rounded-sm border border-black ${
-            state.isCompleted ? "bg-orange-700" : "bg-orange-500"
+            todoState.isCompleted ? "bg-orange-700" : "bg-orange-500"
           }`}
           onClick={handleCompletedClick}
         >
           Completed
         </button>
       </div>
-      <div className=" bg-orange-500/90 p-4 flex flex-col md:flex-row md:justify-between md:items-center mt-5 gap-6" >
-        <div className="flex flex-col gap-4 ">
-          <h3 className="text-lg font-semibold md:text-3xl">Task</h3>
-          <p className="text-base font-extralight">Description</p>
-        </div>
-        <div className="flex gap-2 md:gap-4 ">
-          <MdDeleteForever className="text-lg md:text-3xl hover:text-red-800" />
-          <FaRegCheckCircle className="text-lg md:text-3xl hover:text-orange-200" />
-        </div>
-      </div>
+      {todos.map((item, index) => {
+        return (
+          <div
+            className=" bg-orange-500/90 p-4 flex flex-col md:flex-row md:justify-between md:items-center mt-5 gap-6"
+            key={index}
+          >
+            <div className="flex flex-col gap-4 ">
+              <h3 className="text-lg font-semibold md:text-3xl">
+                {item.title}
+              </h3>
+              <p className="text-base font-extralight">{item.description}</p>
+            </div>
+            <div className="flex gap-2 md:gap-4 ">
+              <MdDeleteForever className="text-lg md:text-3xl hover:text-red-800" />
+              <FaRegCheckCircle className="text-lg md:text-3xl hover:text-orange-200" />
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };
