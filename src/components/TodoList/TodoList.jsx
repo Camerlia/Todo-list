@@ -3,7 +3,7 @@ import { MdDeleteForever } from "react-icons/md";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { TodoContext } from "../context/toggleProvider";
 
-const Todo = () => {
+const TodoList = () => {
   const { state: todoState, dispatch: todoDispatch } = useContext(TodoContext);
   const [todos, setTodos] = useState([]);
   const [title, setTitle] = useState("");
@@ -163,4 +163,4 @@ const Todo = () => {
   );
 };
 
-export default Todo;
+export default TodoList;
